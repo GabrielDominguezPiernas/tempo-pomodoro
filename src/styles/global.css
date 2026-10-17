@@ -1830,9 +1830,9 @@ input:focus-visible {
 
 /* Challenge Card */
 .challenge-card {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   background: var(--color-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
 }
 
@@ -1845,7 +1845,7 @@ input:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .challenge-month {
@@ -1866,14 +1866,14 @@ input:focus-visible {
 
 .challenge-body {
   display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 .challenge-emoji {
   font-family: var(--font-emoji);
-  font-size: 32px;
+  font-size: 24px;
   line-height: 1;
 }
 
@@ -1883,14 +1883,14 @@ input:focus-visible {
 
 .challenge-name {
   display: block;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .challenge-description {
   display: block;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
 }
 
@@ -1901,7 +1901,7 @@ input:focus-visible {
 }
 
 .challenge-progress-bar {
-  height: 6px;
+  height: 4px;
   background: var(--color-border);
   border-radius: var(--radius-full);
   overflow: hidden;
@@ -1917,7 +1917,7 @@ input:focus-visible {
 .challenge-progress-text {
   display: flex;
   justify-content: flex-end;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-variant-numeric: tabular-nums;
 }
 
