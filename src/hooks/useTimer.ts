@@ -111,12 +111,14 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
       const newNextNumber = wasStudy
         ? state.nextPomodoroNumber + 1
         : state.nextPomodoroNumber;
+      // Auto-iniciar solo el descanso, no el siguiente pomodoro
+      const shouldAutoStart = wasStudy;
       return {
         ...state,
         phase: nextPhase,
-        status: 'running',
-        targetTime: Date.now() + action.nextPhaseMs,
-        pausedRemaining: 0,
+        status: shouldAutoStart ? 'running' : 'paused',
+        targetTime: shouldAutoStart ? Date.now() + action.nextPhaseMs : 0,
+        pausedRemaining: shouldAutoStart ? 0 : action.nextPhaseMs,
         totalDuration: action.nextPhaseMs,
         completedPomodoros: newPomodoros,
         nextPomodoroNumber: newNextNumber,
