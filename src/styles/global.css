@@ -567,6 +567,12 @@ input:focus-visible {
   overflow-x: hidden;
   padding: var(--spacing-md);
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.menu-content::-webkit-scrollbar {
+  display: none;
 }
 
 /* Stats Summary */
@@ -658,6 +664,12 @@ input:focus-visible {
   gap: var(--spacing-xs);
   overflow-x: auto;
   padding-bottom: var(--spacing-xs);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.heatmap::-webkit-scrollbar {
+  display: none;
 }
 
 .heatmap-labels {
@@ -1619,6 +1631,12 @@ input:focus-visible {
   animation: slideUp var(--transition-base);
   max-height: 70vh;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.badge-detail-sheet::-webkit-scrollbar {
+  display: none;
 }
 
 @keyframes slideUp {
