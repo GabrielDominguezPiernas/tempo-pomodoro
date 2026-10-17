@@ -46,7 +46,6 @@ export function StatsSummary({
     [records, goalHistory]
   );
 
-  const currentGoalStreak = context?.currentGoalStreak ?? 0;
   const [calendarMonth, setCalendarMonth] = useState<string | undefined>(undefined);
 
   // Reto mensual
@@ -80,20 +79,13 @@ export function StatsSummary({
         </div>
       </div>
 
-      {/* Rachas */}
+      {/* Racha */}
       <div className="stats-streaks">
         {currentStreak > 0 && (
           <div className="streak-badge" aria-label={`${currentStreak} días de racha`}>
             <span className="streak-icon" aria-hidden="true">🔥</span>
             <span className="streak-count">{currentStreak}</span>
             <span className="streak-label">días</span>
-          </div>
-        )}
-        {currentGoalStreak > 0 && (
-          <div className="streak-badge streak-badge--goal" aria-label={`${currentGoalStreak} días objetivo`}>
-            <span className="streak-icon" aria-hidden="true">🎯</span>
-            <span className="streak-count">{currentGoalStreak}</span>
-            <span className="streak-label">objetivo</span>
           </div>
         )}
       </div>
@@ -152,13 +144,6 @@ export function StatsSummary({
             {bestStreak}
           </span>
           <span className="stat-label">Mejor racha</span>
-        </div>
-        <div className="stat-card">
-          <span className="stat-value">
-            <span className="stat-icon" aria-hidden="true">🎯</span>
-            {currentGoalStreak}
-          </span>
-          <span className="stat-label">Racha objetivo</span>
         </div>
       </div>
 
