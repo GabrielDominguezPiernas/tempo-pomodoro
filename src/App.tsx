@@ -146,6 +146,13 @@ export default function App() {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [timer.status, reloadRecords]);
 
+  // Volver a setup cuando el timer vuelve a idle (descanso terminado)
+  useEffect(() => {
+    if (timer.status === 'idle' && screen === 'timer') {
+      setScreen('setup');
+    }
+  }, [timer.status, screen, setScreen]);
+
   const handleStart = useCallback(async () => {
     unlockAudio();
     await requestNotificationPermission();

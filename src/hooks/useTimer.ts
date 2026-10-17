@@ -103,25 +103,29 @@ function timerReducer(state: TimerState, action: TimerAction): TimerState {
     }
     case 'PHASE_COMPLETE': {
       // PHASE_COMPLETE: fin natural, suma al contador si era estudio
-      const nextPhase: Phase = state.phase === 'study' ? 'break' : 'study';
       const wasStudy = state.phase === 'study';
       const newPomodoros = wasStudy
         ? state.completedPomodoros + 1
         : state.completedPomodoros;
-      const newNextNumber = wasStudy
-        ? state.nextPomodoroNumber + 1
-        : state.nextPomodoroNumber;
-      // Auto-iniciar solo el descanso, no el siguiente pomodoro
-      const shouldAutoStart = wasStudy;
+
+      // Si termina el descanso, volver a estado inicial (pantalla de inicio)
+      if (!wasStudy) {
+        return {
+          ...initialState,
+          completedPomodoros: newPomodoros,
+        };
+      }
+
+      // Si termina el estudio, iniciar descanso automáticamente
       return {
         ...state,
-        phase: nextPhase,
-        status: shouldAutoStart ? 'running' : 'paused',
-        targetTime: shouldAutoStart ? Date.now() + action.nextPhaseMs : 0,
-        pausedRemaining: shouldAutoStart ? 0 : action.nextPhaseMs,
+        phase: 'break',
+        status: 'running',
+        targetTime: Date.now() + action.nextPhaseMs,
+        pausedRemaining: 0,
         totalDuration: action.nextPhaseMs,
         completedPomodoros: newPomodoros,
-        nextPomodoroNumber: newNextNumber,
+        nextPomodoroNumber: state.nextPomodoroNumber + 1,
       };
     }
     case 'RESTORE':
