@@ -75,6 +75,7 @@ export function StatsSummary({
             min={GOAL_RANGES.pomodoros.min}
             max={GOAL_RANGES.pomodoros.max}
             onChange={onPomodorosChange}
+            unit=""
           />
         </div>
         <div className="stats-goal-row">

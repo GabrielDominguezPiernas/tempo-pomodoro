@@ -564,7 +564,9 @@ input:focus-visible {
 .menu-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: var(--spacing-md);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Stats Summary */
@@ -1527,7 +1529,7 @@ input:focus-visible {
 .badge-category {
   background: var(--color-bg);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .badge-category-header {
@@ -1561,15 +1563,17 @@ input:focus-visible {
 }
 
 .badge-category-content {
-  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-md);
+  padding: var(--spacing-md);
   border-top: 1px solid var(--color-border);
+  overflow: visible;
 }
 
 .badge-medals-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: var(--spacing-sm);
   justify-items: center;
+  padding: var(--spacing-xs);
 }
 
 .badge-medal-item {
@@ -1735,7 +1739,7 @@ input:focus-visible {
   }
 
   .badge-medals-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
   }
 }
 

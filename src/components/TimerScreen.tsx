@@ -80,7 +80,7 @@ export function TimerScreen({
       </div>
 
       <div className="timer-display">
-        <ProgressRing progress={progress} phase={phase} size={280} strokeWidth={3}>
+        <ProgressRing progress={progress} phase={phase} size={336} strokeWidth={4}>
           <time className="timer-time" aria-label={`Tiempo restante: ${formattedTime}`}>
             {formattedTime}
           </time>

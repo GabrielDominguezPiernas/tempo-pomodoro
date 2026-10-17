@@ -6,6 +6,7 @@ interface DurationStepperProps {
   min: number;
   max: number;
   onChange: (value: number) => void;
+  unit?: string;
 }
 
 export function DurationStepper({
@@ -14,6 +15,7 @@ export function DurationStepper({
   min,
   max,
   onChange,
+  unit = 'min',
 }: DurationStepperProps) {
   const id = useId();
 
@@ -72,9 +74,9 @@ export function DurationStepper({
             max={max}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            aria-label={`${label} en minutos`}
+            aria-label={`${label}${unit ? ` en ${unit}` : ''}`}
           />
-          <span className="stepper-unit">min</span>
+          {unit && <span className="stepper-unit">{unit}</span>}
         </div>
         <button
           type="button"
