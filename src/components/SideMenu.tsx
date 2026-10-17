@@ -4,11 +4,11 @@ import { UnlockedMap } from '../lib/achievements';
 import { ThemeSettings } from '../lib/rewards';
 import { RingGoals, GoalHistory } from '../lib/ringGoals';
 import { StatsSummary } from './StatsSummary';
+import { CalendarPanel } from './CalendarPanel';
 import { BadgeGridV2 } from './BadgeGridV2';
-import { RewardsPicker } from './RewardsPicker';
-import { DataPanel } from './DataPanel';
+import { SettingsPanel } from './SettingsPanel';
 
-type Tab = 'summary' | 'badges' | 'customize' | 'data';
+type Tab = 'summary' | 'calendar' | 'badges' | 'settings';
 
 interface SideMenuProps {
   isOpen: boolean;
@@ -112,7 +112,7 @@ export function SideMenu({
         aria-label="Menú"
       >
         <div className="menu-header">
-          <h2 className="menu-title">Pomodoro</h2>
+          <h2 className="menu-title">Tempo-Pomodoro</h2>
           <button
             ref={closeButtonRef}
             type="button"
@@ -144,6 +144,15 @@ export function SideMenu({
           <button
             type="button"
             role="tab"
+            className={`menu-tab${activeTab === 'calendar' ? ' menu-tab--active' : ''}`}
+            aria-selected={activeTab === 'calendar'}
+            onClick={() => handleTabClick('calendar')}
+          >
+            Calendario
+          </button>
+          <button
+            type="button"
+            role="tab"
             className={`menu-tab${activeTab === 'badges' ? ' menu-tab--active' : ''}`}
             aria-selected={activeTab === 'badges'}
             onClick={() => handleTabClick('badges')}
@@ -153,20 +162,15 @@ export function SideMenu({
           <button
             type="button"
             role="tab"
-            className={`menu-tab${activeTab === 'customize' ? ' menu-tab--active' : ''}`}
-            aria-selected={activeTab === 'customize'}
-            onClick={() => handleTabClick('customize')}
+            className={`menu-tab menu-tab--icon${activeTab === 'settings' ? ' menu-tab--active' : ''}`}
+            aria-selected={activeTab === 'settings'}
+            aria-label="Configuración"
+            onClick={() => handleTabClick('settings')}
           >
-            Personalizar
-          </button>
-          <button
-            type="button"
-            role="tab"
-            className={`menu-tab${activeTab === 'data' ? ' menu-tab--active' : ''}`}
-            aria-selected={activeTab === 'data'}
-            onClick={() => handleTabClick('data')}
-          >
-            Datos
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
           </button>
         </div>
 
@@ -180,6 +184,12 @@ export function SideMenu({
               onMinutesChange={onMinutesChange}
             />
           )}
+          {activeTab === 'calendar' && (
+            <CalendarPanel
+              records={records}
+              goalHistory={goalHistory}
+            />
+          )}
           {activeTab === 'badges' && (
             <BadgeGridV2
               unlocked={unlocked}
@@ -187,19 +197,15 @@ export function SideMenu({
               goalHistory={goalHistory}
             />
           )}
-          {activeTab === 'customize' && (
-            <RewardsPicker
+          {activeTab === 'settings' && (
+            <SettingsPanel
+              records={records}
               theme={theme}
               unlocked={unlocked}
               onAccentChange={onAccentChange}
               onBackgroundChange={onBackgroundChange}
               onSoundChange={onSoundChange}
-            />
-          )}
-          {activeTab === 'data' && onImportData && (
-            <DataPanel
-              records={records}
-              onImport={onImportData}
+              onImportData={onImportData}
             />
           )}
         </div>

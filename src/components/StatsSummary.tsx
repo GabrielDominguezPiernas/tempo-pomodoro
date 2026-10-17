@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react';
 import { SessionRecord } from '../lib/history';
 import { RingGoals, GoalHistory, GOAL_RANGES } from '../lib/ringGoals';
 import {
@@ -7,16 +6,10 @@ import {
   totalMinutes,
   formatMinutes,
   calculateStreaks,
-  heatmapData,
   getTodayStats,
-  buildContext,
 } from '../lib/stats';
 import { ActivityRings } from './ActivityRings';
-import { MonthCalendar } from './MonthCalendar';
-import { ChallengeCard } from './ChallengeCard';
-import { Heatmap } from './Heatmap';
 import { DurationStepper } from './DurationStepper';
-import { getCurrentChallenge, loadChallengeHistory } from '../lib/challenges';
 
 interface StatsSummaryProps {
   records: SessionRecord[];
@@ -29,7 +22,6 @@ interface StatsSummaryProps {
 export function StatsSummary({
   records,
   goals,
-  goalHistory,
   onPomodorosChange,
   onMinutesChange,
 }: StatsSummaryProps) {
@@ -38,23 +30,6 @@ export function StatsSummary({
   const total = totalCount(records);
   const minutes = totalMinutes(records);
   const { currentStreak, bestStreak } = calculateStreaks(records);
-  const heat = heatmapData(records, 12);
-
-  // Contexto memoizado para estadísticas avanzadas
-  const context = useMemo(
-    () => (records.length > 0 ? buildContext(records, goalHistory) : null),
-    [records, goalHistory]
-  );
-
-  const [calendarMonth, setCalendarMonth] = useState<string | undefined>(undefined);
-
-  // Reto mensual
-  const currentChallenge = useMemo(() => getCurrentChallenge(), []);
-  const challengeHistory = useMemo(() => loadChallengeHistory(), []);
-  const challengeState = challengeHistory[currentChallenge.id];
-  const challengeProgress = context
-    ? currentChallenge.progress(context, currentChallenge.month)
-    : 0;
 
   return (
     <div className="stats-summary">
@@ -145,33 +120,6 @@ export function StatsSummary({
           </span>
           <span className="stat-label">Mejor racha</span>
         </div>
-      </div>
-
-      <div className="stats-heatmap">
-        <h3 className="stats-section-title">Últimas 12 semanas</h3>
-        <Heatmap data={heat} />
-      </div>
-
-      {/* Calendario mensual */}
-      <div className="stats-calendar">
-        <h3 className="stats-section-title">Calendario</h3>
-        <MonthCalendar
-          records={records}
-          goalHistory={goalHistory}
-          month={calendarMonth}
-          onMonthChange={setCalendarMonth}
-        />
-      </div>
-
-      {/* Reto mensual */}
-      <div className="stats-challenge">
-        <h3 className="stats-section-title">Reto mensual</h3>
-        <ChallengeCard
-          challenge={currentChallenge}
-          progress={challengeProgress}
-          isCompleted={challengeState?.completed ?? false}
-          completedAt={challengeState?.completedAt ?? null}
-        />
       </div>
     </div>
   );
