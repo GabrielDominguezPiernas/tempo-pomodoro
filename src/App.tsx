@@ -15,14 +15,10 @@ import { useTheme } from './hooks/useTheme';
 import { useRingNotifications } from './hooks/useRingNotifications';
 import { useChallenges } from './hooks/useChallenges';
 import { unlockAudio, playNotificationSound, SoundId } from './lib/audio';
-import { requestNotificationPermission, showNotification } from './lib/notifications';
+import { requestNotificationPermission } from './lib/notifications';
 import { todayCount, calculateStreaks, getTodayStats } from './lib/stats';
 import { applyTheme, loadTheme } from './lib/rewards';
-import {
-  loadTimerSnapshot,
-  calculateRestoreState,
-  clearTimerSnapshot,
-} from './lib/timerPersistence';
+import { clearTimerSnapshot } from './lib/timerPersistence';
 
 type Screen = 'setup' | 'timer';
 
@@ -32,9 +28,8 @@ export default function App() {
   const [breakMinutes, setBreakMinutes] = useLocalStorage('pomodoro-break', 5);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { records, addSession, addMissedSessions, reloadRecords, importRecords } = useHistory();
+  const { records, addSession, reloadRecords, importRecords } = useHistory();
   const { goals, goalHistory, setPomodoros, setMinutes } = useRingGoals();
-  const [restoredMessage, setRestoredMessage] = useState<string | null>(null);
   const {
     unlocked,
     newlyUnlocked,
@@ -70,68 +65,12 @@ export default function App() {
   // Mantener pantalla encendida mientras el timer está activo
   useWakeLock(timer.status === 'running');
 
-  // Restaurar timer al montar
+  // Siempre empezar en setup (sin restaurar timer anterior)
   useEffect(() => {
-    const snapshot = loadTimerSnapshot();
-    if (!snapshot) return;
-
-    const result = calculateRestoreState(snapshot);
-    if (!result) return;
-
-    // Registrar pomodoros perdidos si los hay
-    if (result.missedPomodoros > 0) {
-      addMissedSessions(
-        snapshot.studyMinutes,
-        snapshot.sessionId,
-        snapshot.completedPomodoros + 1,
-        result.missedPomodoros
-      );
-
-      // Mostrar mensaje de restauración
-      const msg =
-        result.missedPomodoros === 1
-          ? '¡1 pomodoro completado mientras estabas fuera!'
-          : `¡${result.missedPomodoros} pomodoros completados mientras estabas fuera!`;
-      setRestoredMessage(msg);
-      showNotification('Pomodoro restaurado', msg);
-    }
-
-    // Si se completó una sesión completa (estudio + descanso), ir a setup
-    if (result.sessionComplete && result.missedPomodoros > 0) {
-      clearTimerSnapshot();
-      setScreen('setup');
-      return;
-    }
-
-    // Calcular el nuevo estado
-    const studyMs = snapshot.studyMinutes * 60 * 1000;
-    const breakMs = snapshot.breakMinutes * 60 * 1000;
-    const newTotalDuration = result.currentPhase === 'study' ? studyMs : breakMs;
-    const newCompletedPomodoros = snapshot.completedPomodoros + result.missedPomodoros;
-    const newNextPomodoroNumber = snapshot.completedPomodoros + result.missedPomodoros + 1;
-
-    // Restaurar timer
-    timer.restore(
-      result.currentPhase,
-      result.shouldRun ? 'running' : 'paused',
-      result.shouldRun ? Date.now() + result.remaining : 0,
-      result.shouldRun ? 0 : result.remaining,
-      newTotalDuration,
-      newCompletedPomodoros,
-      snapshot.sessionId,
-      newNextPomodoroNumber
-    );
-
-    setScreen('timer');
+    clearTimerSnapshot();
+    setScreen('setup');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Limpiar mensaje de restauración después de un tiempo
-  useEffect(() => {
-    if (!restoredMessage) return;
-    const timeout = setTimeout(() => setRestoredMessage(null), 5000);
-    return () => clearTimeout(timeout);
-  }, [restoredMessage]);
 
   // Manejar visibilitychange para actualizar el timer cuando vuelve la pestaña
   useEffect(() => {
@@ -253,12 +192,6 @@ export default function App() {
           achievementId={newlyUnlocked[0]}
           onDismiss={handleToastDismiss}
         />
-      )}
-
-      {restoredMessage && (
-        <div className="restored-toast" role="status" aria-live="polite">
-          {restoredMessage}
-        </div>
       )}
 
       {migrationMessage && (
