@@ -37,9 +37,17 @@ export function TimerScreen({
     (e: KeyboardEvent) => {
       // Ignorar si el menú está abierto
       if (menuOpen) return;
+
       // Ignorar si el foco está en un input
       if (e.target instanceof HTMLInputElement) return;
-      // Ignorar Espacio si el foco está en un botón (evita doble disparo)
+
+      // Ignorar si el foco está en un elemento del panel de tareas
+      const todoPanel = document.getElementById('todo-panel');
+      if (todoPanel && e.target instanceof HTMLElement && todoPanel.contains(e.target)) {
+        return;
+      }
+
+      // Ignorar Espacio si el foco está en un botón o checkbox (evita doble disparo)
       if (e.code === 'Space' && e.target instanceof HTMLButtonElement) return;
 
       switch (e.code) {

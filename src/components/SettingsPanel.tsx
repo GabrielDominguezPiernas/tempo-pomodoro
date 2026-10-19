@@ -4,6 +4,7 @@
 
 import { useState } from 'react';
 import { SessionRecord } from '../lib/history';
+import { TodoItem } from '../lib/todos';
 import { UnlockedMap } from '../lib/achievements';
 import { ThemeSettings } from '../lib/rewards';
 import { RewardsPicker } from './RewardsPicker';
@@ -19,6 +20,8 @@ interface SettingsPanelProps {
   onBackgroundChange: (id: string) => void;
   onSoundChange: (id: string) => void;
   onImportData?: (records: SessionRecord[]) => void;
+  todos?: TodoItem[];
+  onImportTodos?: (todos: TodoItem[]) => void;
 }
 
 export function SettingsPanel({
@@ -29,6 +32,8 @@ export function SettingsPanel({
   onBackgroundChange,
   onSoundChange,
   onImportData,
+  todos,
+  onImportTodos,
 }: SettingsPanelProps) {
   const [activeSection, setActiveSection] = useState<SettingsSection>('customize');
 
@@ -65,6 +70,8 @@ export function SettingsPanel({
           <DataPanel
             records={records}
             onImport={onImportData}
+            todos={todos}
+            onImportTodos={onImportTodos}
           />
         )}
       </div>

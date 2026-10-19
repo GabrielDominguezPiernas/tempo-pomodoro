@@ -2029,3 +2029,417 @@ input:focus-visible {
   width: 18px;
   height: 18px;
 }
+
+/* ============================================
+   Todo Panel
+   ============================================ */
+
+/* Todo Button (esquina superior derecha) */
+.todo-button {
+  position: fixed;
+  top: calc(var(--spacing-md) + var(--safe-top));
+  right: calc(var(--spacing-md) + var(--safe-right));
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-text-secondary);
+  z-index: 100;
+  transition: color var(--transition-fast);
+}
+
+.todo-button:hover {
+  color: var(--color-text);
+}
+
+.todo-button-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 16px;
+  text-align: center;
+  color: white;
+  background: var(--color-accent-study);
+  border-radius: var(--radius-full);
+}
+
+/* Todo Overlay (solo modo estrecho) */
+.todo-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  z-index: 200;
+  animation: fadeInOverlay var(--transition-base);
+}
+
+/* Todo Panel Base */
+.todo-panel {
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--color-surface) 95%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.todo-panel--collapsed {
+  width: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: width var(--transition-base);
+}
+
+/* Todo Panel - Modo ancho (acoplado) */
+.todo-panel--wide {
+  width: clamp(280px, 24vw, 340px);
+  height: 100%;
+  flex-shrink: 0;
+  border-left: 1px solid var(--color-border);
+  box-shadow: -2px 0 12px var(--color-shadow);
+  transition: width var(--transition-base);
+}
+
+/* Todo Panel - Modo estrecho (cajón flotante) */
+.todo-panel--narrow {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(88vw, 380px);
+  height: 100dvh;
+  z-index: 300;
+  box-shadow: -4px 0 24px var(--color-shadow);
+  animation: slideInRight var(--transition-base);
+  padding-top: var(--safe-top);
+  padding-bottom: var(--safe-bottom);
+  padding-right: var(--safe-right);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Todo Header */
+.todo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.todo-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-sm);
+}
+
+.todo-count {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+}
+
+.todo-close {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-md);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.todo-close:hover {
+  color: var(--color-text);
+  background-color: var(--color-surface-hover);
+}
+
+/* Todo Form */
+.todo-form {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.todo-input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.todo-input:focus {
+  border-color: var(--color-accent-study);
+  outline: none;
+}
+
+.todo-input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.todo-add-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-accent-study);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  transition: opacity var(--transition-fast);
+  min-height: 44px;
+}
+
+.todo-add-btn:hover {
+  opacity: 0.9;
+}
+
+/* Todo Content */
+.todo-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--spacing-md);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.todo-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Todo Empty State */
+.todo-empty {
+  text-align: center;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  padding: var(--spacing-xl);
+}
+
+/* Todo List */
+.todo-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+/* Todo Item */
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.todo-item:hover {
+  background: var(--color-surface-hover);
+}
+
+.todo-item:hover .todo-delete-btn,
+.todo-item:focus-within .todo-delete-btn {
+  opacity: 1;
+}
+
+/* Checkbox Label */
+.todo-checkbox-label {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  min-width: 0;
+}
+
+/* Checkbox oculto pero accesible */
+.todo-checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Checkbox estilo Apple */
+.todo-checkbox-custom {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-text-tertiary);
+  border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.todo-checkbox-custom::after {
+  content: '';
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translateY(-1px);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.todo-checkbox:checked + .todo-checkbox-custom {
+  background: var(--color-accent-study);
+  border-color: var(--color-accent-study);
+}
+
+.todo-checkbox:checked + .todo-checkbox-custom::after {
+  opacity: 1;
+}
+
+.todo-checkbox:focus-visible + .todo-checkbox-custom {
+  outline: 2px solid var(--color-accent-study);
+  outline-offset: 2px;
+}
+
+/* Todo Text */
+.todo-text {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  transition: color var(--transition-fast), opacity var(--transition-fast);
+  padding-top: 2px;
+}
+
+.todo-item--done .todo-text {
+  text-decoration: line-through;
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
+}
+
+/* Delete Button */
+.todo-delete-btn {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.todo-delete-btn:hover {
+  color: #d32f2f;
+  background: rgba(211, 47, 47, 0.1);
+}
+
+.todo-delete-btn:focus-visible {
+  opacity: 1;
+}
+
+/* En dispositivos táctiles, siempre visible */
+@media (hover: none) {
+  .todo-delete-btn {
+    opacity: 1;
+  }
+}
+
+/* Completed Section */
+.todo-completed-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.todo-completed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+}
+
+.todo-completed-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.todo-clear-btn {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent-study);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast);
+}
+
+.todo-clear-btn:hover {
+  background: var(--color-accent-study-light);
+}
+
+.todo-list--completed .todo-item {
+  background: transparent;
+}
+
+/* Layout con panel acoplado (pantallas anchas) */
+@media (min-width: 1024px) {
+  .app-layout {
+    display: flex;
+    min-height: 100dvh;
+    width: 100%;
+  }
+
+  .app-layout .app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: padding-right var(--transition-base);
+  }
+
+  .app-layout .todo-panel--wide {
+    position: relative;
+    height: 100dvh;
+  }
+
+  /* Asegurar que el temporizador no se deforme */
+  .app-layout .timer-screen,
+  .app-layout .setup-screen {
+    max-width: min(400px, calc(100% - var(--spacing-xl) * 2));
+  }
+}
+
+/* Ajustes para pantallas estrechas con panel abierto */
+@media (max-width: 1023px) {
+  .todo-button {
+    z-index: 100;
+  }
+}

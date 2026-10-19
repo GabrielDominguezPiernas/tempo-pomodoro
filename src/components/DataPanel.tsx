@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import { SessionRecord } from '../lib/history';
+import { TodoItem, validateTodosForImport, mergeTodos, loadTodos } from '../lib/todos';
 import { RingGoals, GoalHistory, loadRingGoals, loadGoalHistory } from '../lib/ringGoals';
 import { UnlockedMap, loadUnlocked } from '../lib/achievements';
 import { ChallengeHistory, loadChallengeHistory } from '../lib/challenges';
@@ -30,6 +31,7 @@ interface ExportDataV2 {
   goalHistory: GoalHistory;
   unlocked: UnlockedMap;
   challengeHistory: ChallengeHistory;
+  todos?: TodoItem[]; // Añadido como opcional para mantener compatibilidad
 }
 
 type ExportData = ExportDataV1 | ExportDataV2;
@@ -37,11 +39,13 @@ type ExportData = ExportDataV1 | ExportDataV2;
 interface DataPanelProps {
   records: SessionRecord[];
   onImport: (records: SessionRecord[]) => void;
+  todos?: TodoItem[];
+  onImportTodos?: (todos: TodoItem[]) => void;
 }
 
 type ImportMode = 'merge' | 'replace' | null;
 
-export function DataPanel({ records, onImport }: DataPanelProps) {
+export function DataPanel({ records, onImport, todos, onImportTodos }: DataPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importData, setImportData] = useState<ExportData | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
@@ -57,6 +61,7 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
     const goalHistory = loadGoalHistory();
     const unlocked = loadUnlocked();
     const challengeHistory = loadChallengeHistory();
+    const todosToExport = todos ?? loadTodos();
 
     const data: ExportDataV2 = {
       app: 'pomodoro',
@@ -71,6 +76,7 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
       goalHistory,
       unlocked,
       challengeHistory,
+      todos: todosToExport,
     };
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -85,7 +91,7 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
     a.click();
 
     URL.revokeObjectURL(url);
-  }, [records]);
+  }, [records, todos]);
 
   const handleFileSelect = useCallback(() => {
     fileInputRef.current?.click();
@@ -176,18 +182,35 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
       }
 
       // Para v2, importar datos adicionales directamente a localStorage
-      if (importData.version === 2 && mode === 'replace') {
-        if (importData.ringGoals) {
-          localStorage.setItem('pomodoro-ring-goals-v1', JSON.stringify(importData.ringGoals));
+      if (importData.version === 2) {
+        if (mode === 'replace') {
+          if (importData.ringGoals) {
+            localStorage.setItem('pomodoro-ring-goals-v1', JSON.stringify(importData.ringGoals));
+          }
+          if (importData.goalHistory) {
+            localStorage.setItem('pomodoro-goal-history-v1', JSON.stringify(importData.goalHistory));
+          }
+          if (importData.unlocked) {
+            localStorage.setItem('pomodoro-unlocked-v1', JSON.stringify(importData.unlocked));
+          }
+          if (importData.challengeHistory) {
+            localStorage.setItem('pomodoro-challenges-v1', JSON.stringify(importData.challengeHistory));
+          }
         }
-        if (importData.goalHistory) {
-          localStorage.setItem('pomodoro-goal-history-v1', JSON.stringify(importData.goalHistory));
-        }
-        if (importData.unlocked) {
-          localStorage.setItem('pomodoro-unlocked-v1', JSON.stringify(importData.unlocked));
-        }
-        if (importData.challengeHistory) {
-          localStorage.setItem('pomodoro-challenges-v1', JSON.stringify(importData.challengeHistory));
+
+        // Importar tareas si hay y tenemos el handler
+        if (importData.todos && onImportTodos) {
+          const validatedTodos = validateTodosForImport(importData.todos);
+          if (validatedTodos.length > 0) {
+            if (mode === 'replace') {
+              onImportTodos(validatedTodos);
+            } else {
+              // Merge: combinar sin duplicados por ID
+              const currentTodos = todos ?? loadTodos();
+              const mergedTodos = mergeTodos(currentTodos, validatedTodos);
+              onImportTodos(mergedTodos);
+            }
+          }
         }
       }
 
@@ -198,7 +221,7 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
       // Limpiar mensaje de éxito después de 3 segundos
       setTimeout(() => setImportSuccess(false), 3000);
     },
-    [importData, records, onImport]
+    [importData, records, onImport, todos, onImportTodos]
   );
 
   const handleImportCancel = useCallback(() => {
@@ -211,13 +234,14 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
       <section className="data-section">
         <h3 className="data-title">Exportar datos</h3>
         <p className="data-description">
-          Descarga un backup de tus {records.length} sesiones.
+          Descarga un backup de tus {records.length} sesiones
+          {todos && todos.length > 0 && ` y ${todos.length} tareas`}.
         </p>
         <button
           type="button"
           className="data-button"
           onClick={handleExport}
-          disabled={records.length === 0}
+          disabled={records.length === 0 && (!todos || todos.length === 0)}
         >
           Descargar backup
         </button>
@@ -263,6 +287,9 @@ export function DataPanel({ records, onImport }: DataPanelProps) {
           <h4 className="import-dialog-title">Importar backup</h4>
           <p className="import-dialog-info">
             El backup contiene <strong>{importData.records.length}</strong> sesiones
+            {importData.version === 2 && importData.todos && importData.todos.length > 0 && (
+              <> y <strong>{validateTodosForImport(importData.todos).length}</strong> tareas</>
+            )}
             <br />
             del {new Date(importData.exportedAt).toLocaleDateString('es-ES')}
           </p>

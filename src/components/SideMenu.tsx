@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { SessionRecord } from '../lib/history';
+import { TodoItem } from '../lib/todos';
 import { UnlockedMap } from '../lib/achievements';
 import { ThemeSettings } from '../lib/rewards';
 import { RingGoals, GoalHistory } from '../lib/ringGoals';
@@ -24,6 +25,8 @@ interface SideMenuProps {
   onBackgroundChange: (id: string) => void;
   onSoundChange: (id: string) => void;
   onImportData?: (records: SessionRecord[]) => void;
+  todos?: TodoItem[];
+  onImportTodos?: (todos: TodoItem[]) => void;
 }
 
 export function SideMenu({
@@ -40,6 +43,8 @@ export function SideMenu({
   onBackgroundChange,
   onSoundChange,
   onImportData,
+  todos,
+  onImportTodos,
 }: SideMenuProps) {
   const [activeTab, setActiveTab] = useState<Tab>('summary');
   const panelRef = useRef<HTMLDivElement>(null);
@@ -206,6 +211,8 @@ export function SideMenu({
               onBackgroundChange={onBackgroundChange}
               onSoundChange={onSoundChange}
               onImportData={onImportData}
+              todos={todos}
+              onImportTodos={onImportTodos}
             />
           )}
         </div>
